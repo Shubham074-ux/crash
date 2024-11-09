@@ -12,7 +12,7 @@ const authToken = 'e57be78eef4e1a489756195ce1e6eac6';
 const client = twilio(accountSid, authToken);
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/sosContacts')
+mongoose.connect('mongodb+srv://tiwarishubham1607074:HmahiR3fQQ3h0ku3@soscontacts.w5bxl.mongodb.net/?retryWrites=true&w=majority&appName=sosContacts')
   .then(() => console.log('Connected to MongoDB'))
   .catch((error) => console.log('Error connecting to MongoDB:', error));
 
