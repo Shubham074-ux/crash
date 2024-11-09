@@ -2,15 +2,17 @@ const express = require('express');
 const twilio = require('twilio');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cors  = require('cors');
 const app = express();
 
+app.use(cors());
 // Twilio credentials
 const accountSid = 'AC211e5d9a0514b217b711427b22c81727';
-const authToken = '76d8f6305785ef6c5a86e3363f9dba96';
+const authToken = 'e57be78eef4e1a489756195ce1e6eac6';
 const client = twilio(accountSid, authToken);
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://tiwarishubham1607074:HmahiR3fQQ3h0ku3@soscontacts.w5bxl.mongodb.net/?retryWrites=true&w=majority&appName=sosContacts')
+mongoose.connect('mongodb://localhost:27017/sosContacts')
   .then(() => console.log('Connected to MongoDB'))
   .catch((error) => console.log('Error connecting to MongoDB:', error));
 
