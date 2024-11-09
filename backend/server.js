@@ -2,10 +2,10 @@ const express = require('express');
 const twilio = require('twilio');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const cors  = require('cors');
+// const cors  = require('cors');
 const app = express();
 
-app.use(cors());
+// app.use(cors());
 // Twilio credentials
 const accountSid = 'AC211e5d9a0514b217b711427b22c81727';
 const authToken = 'e57be78eef4e1a489756195ce1e6eac6';
