@@ -53,23 +53,23 @@ app.get('/get-contacts', async (req, res) => {
 });
 
 // Route to toggle contact status
-app.post('/toggle-contact', async (req, res) => {
-  const { phoneNumber } = req.body;
-
-  if (!phoneNumber) {
-    return res.status(400).send('Phone number is required.');
-  }
+app.put('/toggle-contact/:id', async (req, res) => {
+  const { id } = req.params; // Get the ID from the URL
 
   try {
-    const contact = await Contact.findOne({ phoneNumber });
+    const contact = await Contact.findById(id); // Find the contact by _id
 
     if (!contact) {
       return res.status(404).send('Contact not found.');
     }
 
-    contact.isEnabled = !contact.isEnabled;
+    contact.isEnabled = !contact.isEnabled; // Toggle the isEnabled value
     await contact.save();
-    res.status(200).json({ message: 'Contact status updated', isEnabled: contact.isEnabled });
+
+    res.status(200).json({ 
+      message: 'Contact status updated', 
+      isEnabled: contact.isEnabled 
+    });
   } catch (error) {
     res.status(500).send(`Error toggling contact: ${error.message}`);
   }
