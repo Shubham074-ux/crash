@@ -5,8 +5,8 @@ const bodyParser = require('body-parser');
 const app = express();
 
 // Twilio credentials
-const accountSid = 'AC211e5d9a0514b217b711427b22c81727';
-const authToken = '76d8f6305785ef6c5a86e3363f9dba96';
+const accountSid = 'AC9035648ae1b7ae50351d8ff859495736';
+const authToken = '11567b218e833a9852ff3c79101a2a32';
 const client = twilio(accountSid, authToken);
 
 // Connect to MongoDB
@@ -62,7 +62,7 @@ app.post('/send-sms', async (req, res) => {
   try {
     const sentMessage = await client.messages.create({
       body: message,
-      from: '+14253054685', // Replace with your Twilio number
+      from: '+15077095057', // Replace with your Twilio number
       to: to,
     });
     res.status(200).send(`Message sent: ${sentMessage.sid}`);
