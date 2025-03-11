@@ -30,48 +30,44 @@ app.use(bodyParser.json());
 app.post('/add-contact', async (req, res) => {
     try {
         const { phoneNumber, alias } = req.body;
-
-        if (!phoneNumber || !alias) {
-            return res.status(400).json({ error: 'Phone number and alias are required.' });
-        }
-
-        const newContact = new Contact({ phoneNumber, alias, isEnabled: true }); // Default is ON
+        const newContact = new Contact({ phoneNumber, alias, isEnabled: true }); // Default enabled
         await newContact.save();
-
-        res.status(201).json({ message: 'Contact added successfully', contact: newContact });
+        res.status(200).json({ message: 'Contact added successfully', contact: newContact });
     } catch (error) {
         res.status(500).json({ error: `Error adding contact: ${error.message}` });
     }
 });
 
-// Route to fetch contacts
+// Get Contacts
 app.get('/get-contacts', async (req, res) => {
-  try {
-    const contacts = await Contact.find();
-    res.status(200).json(contacts);
-  } catch (error) {
-    res.status(500).send(`Error fetching contacts: ${error.message}`);
-  }
-});
-//toggling the contact
-app.put('/toggle-contact/:id', async (req, res) => {
     try {
-        const { id } = req.params;
-        const contact = await Contact.findById(id);
+        const contacts = await Contact.find({});
+        res.status(200).json(contacts);
+    } catch (error) {
+        res.status(500).json({ error: `Error fetching contacts: ${error.message}` });
+    }
+});
+
+// Toggle Contact Status
+app.put('/toggle-contact', async (req, res) => {
+    try {
+        const { phoneNumber } = req.body;
+        const contact = await Contact.findOne({ phoneNumber });
 
         if (!contact) {
             return res.status(404).json({ error: 'Contact not found' });
         }
 
-        contact.isEnabled = !contact.isEnabled;  // ✅ Toggle ON/OFF
+        contact.isEnabled = !contact.isEnabled; // Toggle the value
         await contact.save();
 
-        res.status(200).json({ message: 'Contact toggled successfully', contact });
+        res.status(200).json({ message: 'Contact status updated', contact });
     } catch (error) {
         res.status(500).json({ error: `Error toggling contact: ${error.message}` });
     }
 });
-// Route to send an SMS
+
+// Send SMS only to enabled contacts
 app.post('/send-sms', async (req, res) => {
     try {
         const { to, message } = req.body;
@@ -88,7 +84,7 @@ app.post('/send-sms', async (req, res) => {
 
         const sentMessage = await twilioClient.messages.create({
             body: message,
-            from: '+15077095057',
+            from: '+15077095057', // Twilio Number from .env
             to: to,
         });
 
