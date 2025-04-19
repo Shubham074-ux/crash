@@ -90,6 +90,16 @@ app.put('/update-user-details', async (req, res) => {
   }
 });
 
+//fetching contacts
+app.get('/get-contacts', async (req, res) => {
+  try {
+    const contacts = await Contact.find();
+    res.status(200).json(contacts);
+  } catch (error) {
+    res.status(500).send(Error fetching contacts: ${error.message});
+  }
+});
+
 // Route to toggle contact status
 app.put('/toggle-contact/:id', async (req, res) => {
   const { id } = req.params; // Get the ID from the URL
