@@ -51,44 +51,29 @@ app.post('/add-contact', async (req, res) => {
   }
 });
 //to get user-info
-app.post('/add-user-info', async (req, res) => {
-  const { name, alternatePhone, address, bloodGroup, userId } = req.body;
-
-  if (!name || !alternatePhone || !address || !bloodGroup) {
-    return res.status(400).send('Please fill all fields');
-  }
-
+// Route to fetch the existing user details
+app.get('/get-user-info', async (req, res) => {
   try {
-    if (userId) {
-      // If userId is provided, update the existing user
-      const user = await User.findById(userId);
-
-      if (!user) {
-        return res.status(404).send('User not found');
-      }
-
-      // Update user details
-      user.name = name;
-      user.alternatePhone = alternatePhone;
-      user.address = address;
-      user.bloodGroup = bloodGroup;
-
-      await user.save();
-      return res.status(200).send('User info updated successfully');
-    } else {
-      // If no userId, create a new user
-      const newUser = new User({
-        name,
-        alternatePhone,
-        address,
-        bloodGroup,
-      });
-
-      await newUser.save();
-      return res.status(200).send('User info added successfully');
-    }
+    const user = await UserDetails.findOne(); // Fetch the single user
+    res.status(200).json(user);
   } catch (error) {
-    return res.status(500).send(`Error: ${error.message}`);
+    res.status(500).send(`Error fetching user details: ${error.message}`);
+  }
+});
+
+// Route to update the user details
+app.put('/update-user-info', async (req, res) => {
+  const { name, alternatePhone, address, bloodGroup } = req.body;
+  try {
+    const user = await UserDetails.findOne(); // Fetch the single user
+    user.name = name;
+    user.alternatePhone = alternatePhone;
+    user.address = address;
+    user.bloodGroup = bloodGroup;
+    await user.save();
+    res.status(200).json({ message: 'User info updated successfully' });
+  } catch (error) {
+    res.status(500).send(`Error updating user details: ${error.message}`);
   }
 });
 
