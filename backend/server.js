@@ -53,60 +53,40 @@ app.post('/add-contact', async (req, res) => {
 //to get user-info
 // Route to fetch the existing user details
 // Fetch user details
-app.get('/get-user-info', async (req, res) => {
+// Route to fetch the user details (if it exists, else return an empty object)
+app.get('/get-user-details', async (req, res) => {
   try {
-    const user = await UserInfo.findOne(); // Fetch the single user
-    if (!user) {
-      return res.status(404).send('User details not found');
+    const user = await UserInfo.findOne(); // Get the single user
+    if (user) {
+      res.status(200).json(user); // Send user details
+    } else {
+      res.status(200).json({}); // No user found, send empty object
     }
-    res.status(200).json(user);
   } catch (error) {
     res.status(500).send(`Error fetching user details: ${error.message}`);
   }
 });
 
-// Update user details
-app.put('/update-user-info', async (req, res) => {
+// Route to update user details (only one user, so it will update the same record)
+app.put('/update-user-details', async (req, res) => {
   const { name, alternatePhone, address, bloodGroup } = req.body;
   try {
-    const user = await UserInfo.findOne(); // Fetch the single user
-    if (!user) {
-      return res.status(404).send('User details not found');
+    const user = await UserInfo.findOne(); // Get the user to update
+    if (user) {
+      user.name = name;
+      user.alternatePhone = alternatePhone;
+      user.address = address;
+      user.bloodGroup = bloodGroup;
+      await user.save(); // Save updated user details
+      res.status(200).json({ message: 'User info updated successfully' });
+    } else {
+      // If no user exists, create a new one
+      const newUser = new UserInfo({ name, alternatePhone, address, bloodGroup });
+      await newUser.save();
+      res.status(200).json({ message: 'User info added successfully' });
     }
-    user.name = name;
-    user.alternatePhone = alternatePhone;
-    user.address = address;
-    user.bloodGroup = bloodGroup;
-    await user.save();
-    res.status(200).json({ message: 'User info updated successfully' });
   } catch (error) {
     res.status(500).send(`Error updating user details: ${error.message}`);
-  }
-});
-
-// Route to save new user details if user doesn't exist
-app.post('/add-user-info', async (req, res) => {
-  const { name, alternatePhone, address, bloodGroup } = req.body;
-  try {
-    const existingUser = await UserInfo.findOne();
-    if (existingUser) {
-      return res.status(400).send('User details already exist.');
-    }
-    const newUser = new UserInfo({ name, alternatePhone, address, bloodGroup });
-    await newUser.save();
-    res.status(200).json({ message: 'User info added successfully' });
-  } catch (error) {
-    res.status(500).send(`Error adding user details: ${error.message}`);
-  }
-});
-
-// Route to fetch contacts
-app.get('/get-contacts', async (req, res) => {
-  try {
-    const contacts = await Contact.find();
-    res.status(200).json(contacts);
-  } catch (error) {
-    res.status(500).send(`Error fetching contacts: ${error.message}`);
   }
 });
 
