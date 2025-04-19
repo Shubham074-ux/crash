@@ -50,6 +50,16 @@ app.post('/add-contact', async (req, res) => {
     res.status(500).send(`Error adding contact: ${error.message}`);
   }
 });
+
+
+app.get('/get-contacts', async (req, res) => {
+  try {
+    const contacts = await Contact.find();
+    res.status(200).json(contacts);
+  } catch (error) {
+    res.status(500).send(Error fetching contacts: ${error.message});
+  }
+});
 //to get user-info
 // Route to fetch the existing user details
 // Fetch user details
@@ -91,14 +101,7 @@ app.put('/update-user-details', async (req, res) => {
 });
 
 //fetching contacts
-app.get('/get-contacts', async (req, res) => {
-  try {
-    const contacts = await Contact.find();
-    res.status(200).json(contacts);
-  } catch (error) {
-    res.status(500).send(Error fetching contacts: ${error.message});
-  }
-});
+
 
 // Route to toggle contact status
 app.put('/toggle-contact/:id', async (req, res) => {
