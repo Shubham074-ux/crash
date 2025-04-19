@@ -57,7 +57,7 @@ app.get('/get-contacts', async (req, res) => {
     const contacts = await Contact.find();
     res.status(200).json(contacts);
   } catch (error) {
-    res.status(500).send(Error fetching contacts: ${error.message});
+res.status(500).send(`Error fetching contacts: ${error.message}`);
   }
 });
 //to get user-info
