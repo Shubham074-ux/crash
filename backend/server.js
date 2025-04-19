@@ -22,6 +22,15 @@ const contactSchema = new mongoose.Schema({
 
 const Contact = mongoose.model('Contact', contactSchema);
 
+const userInfoSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  alternatePhone: { type: String, required: true },
+  address: { type: String, required: true },
+  bloodGroup: { type: String, required: true },
+});
+
+const UserInfo = mongoose.model('UserInfo', userInfoSchema);
+
 app.use(bodyParser.json());
 
 // Route to add a contact (Default toggle ON)
@@ -41,6 +50,25 @@ app.post('/add-contact', async (req, res) => {
     res.status(500).send(`Error adding contact: ${error.message}`);
   }
 });
+//to get user-info
+app.post('/add-user-info', async (req, res) => {
+  const { name, alternatePhone, address, bloodGroup } = req.body;
+
+  if (!name || !alternatePhone || !address || !bloodGroup) {
+    return res.status(400).send('All fields are required.');
+  }
+
+  const newUserInfo = new UserInfo({ name, alternatePhone, address, bloodGroup });
+
+  try {
+    await newUserInfo.save();
+    res.status(200).send('User info added successfully');
+  } catch (error) {
+    res.status(500).send(`Error adding user info: ${error.message}`);
+  }
+});
+
+
 
 // Route to fetch contacts
 app.get('/get-contacts', async (req, res) => {
