@@ -52,23 +52,45 @@ app.post('/add-contact', async (req, res) => {
 });
 //to get user-info
 app.post('/add-user-info', async (req, res) => {
-  const { name, alternatePhone, address, bloodGroup } = req.body;
+  const { name, alternatePhone, address, bloodGroup, userId } = req.body;
 
   if (!name || !alternatePhone || !address || !bloodGroup) {
-    return res.status(400).send('All fields are required.');
+    return res.status(400).send('Please fill all fields');
   }
-
-  const newUserInfo = new UserInfo({ name, alternatePhone, address, bloodGroup });
 
   try {
-    await newUserInfo.save();
-    res.status(200).send('User info added successfully');
+    if (userId) {
+      // If userId is provided, update the existing user
+      const user = await User.findById(userId);
+
+      if (!user) {
+        return res.status(404).send('User not found');
+      }
+
+      // Update user details
+      user.name = name;
+      user.alternatePhone = alternatePhone;
+      user.address = address;
+      user.bloodGroup = bloodGroup;
+
+      await user.save();
+      return res.status(200).send('User info updated successfully');
+    } else {
+      // If no userId, create a new user
+      const newUser = new User({
+        name,
+        alternatePhone,
+        address,
+        bloodGroup,
+      });
+
+      await newUser.save();
+      return res.status(200).send('User info added successfully');
+    }
   } catch (error) {
-    res.status(500).send(`Error adding user info: ${error.message}`);
+    return res.status(500).send(`Error: ${error.message}`);
   }
 });
-
-
 
 // Route to fetch contacts
 app.get('/get-contacts', async (req, res) => {
