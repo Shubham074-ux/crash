@@ -52,20 +52,27 @@ app.post('/add-contact', async (req, res) => {
 });
 //to get user-info
 // Route to fetch the existing user details
+// Fetch user details
 app.get('/get-user-info', async (req, res) => {
   try {
-    const user = await UserDetails.findOne(); // Fetch the single user
+    const user = await UserInfo.findOne(); // Fetch the single user
+    if (!user) {
+      return res.status(404).send('User details not found');
+    }
     res.status(200).json(user);
   } catch (error) {
     res.status(500).send(`Error fetching user details: ${error.message}`);
   }
 });
 
-// Route to update the user details
+// Update user details
 app.put('/update-user-info', async (req, res) => {
   const { name, alternatePhone, address, bloodGroup } = req.body;
   try {
-    const user = await UserDetails.findOne(); // Fetch the single user
+    const user = await UserInfo.findOne(); // Fetch the single user
+    if (!user) {
+      return res.status(404).send('User details not found');
+    }
     user.name = name;
     user.alternatePhone = alternatePhone;
     user.address = address;
@@ -74,6 +81,22 @@ app.put('/update-user-info', async (req, res) => {
     res.status(200).json({ message: 'User info updated successfully' });
   } catch (error) {
     res.status(500).send(`Error updating user details: ${error.message}`);
+  }
+});
+
+// Route to save new user details if user doesn't exist
+app.post('/add-user-info', async (req, res) => {
+  const { name, alternatePhone, address, bloodGroup } = req.body;
+  try {
+    const existingUser = await UserInfo.findOne();
+    if (existingUser) {
+      return res.status(400).send('User details already exist.');
+    }
+    const newUser = new UserInfo({ name, alternatePhone, address, bloodGroup });
+    await newUser.save();
+    res.status(200).json({ message: 'User info added successfully' });
+  } catch (error) {
+    res.status(500).send(`Error adding user details: ${error.message}`);
   }
 });
 
